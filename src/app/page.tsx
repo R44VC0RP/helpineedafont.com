@@ -14,8 +14,8 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
-import { Label } from "@/components/ui/label"
 import { Badge } from "@/components/ui/badge"
+import { Label } from "@/components/ui/label"
 import { Sparkles } from 'lucide-react'
 import { ScrollArea } from "@/components/ui/scroll-area"
 interface Font {
@@ -118,7 +118,7 @@ export default function Home() {
     }
   }
 
-  const shuffleArray = (array: any[]) => {
+  const shuffleArray = (array: Font[]) => {
     for (let i = array.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
       [array[i], array[j]] = [array[j], array[i]]
@@ -273,8 +273,26 @@ export default function Home() {
     }
   }, [handleKeep, handleSkip])
 
+  const Loading = () => {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <motion.div
+          animate={{ rotate: 360 }}
+          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+          className="w-16 h-16 border-4 border-gray-300 rounded-full border-t-4 border-blue-500 animate-spin"
+        >
+          <div className="w-4 h-4 bg-red-500 rounded-full absolute top-0 left-0 animate-ping"></div>
+          <div className="w-4 h-4 bg-green-500 rounded-full absolute top-0 right-0 animate-ping"></div>
+          <div className="w-4 h-4 bg-blue-500 rounded-full absolute bottom-0 left-0 animate-ping"></div>
+          <div className="w-4 h-4 bg-yellow-500 rounded-full absolute bottom-0 right-0 animate-ping"></div>
+        </motion.div>
+      </div>
+    );
+  };
+
+
   if (isLoading) {
-    return <div className="min-h-screen flex items-center justify-center">Loading fonts...</div>
+    return Loading()
   }
 
   return (
@@ -292,6 +310,7 @@ export default function Home() {
               {fonts.length} fonts loaded
             </Badge>
             <div className="">
+              <Label htmlFor="customText" className="text-black">Set your font test text:</Label>
               <Input
                 type="text"
                 value={customText}
@@ -405,7 +424,7 @@ export default function Home() {
           <button onClick={toggleCollapse} className="text-black">
             {!isCollapsed ? <ChevronUp className="h-5 w-5" /> : <ChevronDown className="h-5 w-5" />}
           </button>
-          {!isCollapsed ? <h2 className="text-xl font-semibold ml-2">Font Stats</h2> : <h2 className="text-xl font-semibold ml-2"></h2>}
+          {!isCollapsed ? <><h2 className="text-md font-semibold ml-2">Font Stats | {keptFonts.length} saved fonts.</h2></> : <h2 className="text-xl font-semibold ml-2"></h2>}
         </div>
         {isCollapsed && (
           <>
@@ -434,7 +453,7 @@ export default function Home() {
                             </p>
                             <pre className="bg-gray-100 p-2 rounded">
                               <code className="text-blue-500">
-                                &lt;link rel="stylesheet" href="https://fonts.googleapis.com/css?family={font}"&gt;
+                                &lt;link rel=&quot;stylesheet&quot; href=&quot;https://fonts.googleapis.com/css?family={font}&quot;&gt;
                               </code>
                             </pre>
                             <p className="mt-2">
@@ -443,14 +462,14 @@ export default function Home() {
                             <pre className="bg-gray-100 p-2 rounded">
                               <code className="text-blue-500">
                                 .css-selector {'{'}<br />
-                                &nbsp;&nbsp;font-family: '{font}', serif;<br />
+                                &nbsp;&nbsp;font-family: &apos;{font}&apos;, serif;<br />
                                 {'}'}
                               </code>
                             </pre>
                             <p className="mt-2">or with an inline style on the element itself:</p>
                             <pre className="bg-gray-100 p-2 rounded">
                               <code className="text-blue-500">
-                                &lt;div style="font-family: '{font}', serif;"&gt;Your text&lt;/div&gt;
+                                &lt;div style=&quot;font-family: &apos;{font}&apos;, serif;&quot;&gt;Your text&lt;/div&gt;
                               </code>
                             </pre>
                           </TooltipContent>

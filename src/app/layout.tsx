@@ -16,7 +16,6 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Nanum Gothic"></link>
       <body
         className={`antialiased`}
       >
