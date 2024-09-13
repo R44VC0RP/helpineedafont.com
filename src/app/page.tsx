@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useSwipeable } from 'react-swipeable'
-import { X, Heart, Star, Frown } from 'lucide-react'
+import { X, Heart, Star, Frown, ChevronDown, ChevronUp } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card } from "@/components/ui/card"
@@ -32,6 +32,7 @@ interface CategoryWeights {
 }
 
 export default function Home() {
+  const [isCollapsed, setIsCollapsed] = useState(false);
   const [fonts, setFonts] = useState<Font[]>([])
   const [currentFontIndex, setCurrentFontIndex] = useState(0)
   const [keptFonts, setKeptFonts] = useState<string[]>([])
@@ -47,6 +48,10 @@ export default function Home() {
   const [superLikedFonts, setSuperLikedFonts] = useState<string[]>([])
 
   const cardRef = useRef(null)
+
+  const toggleCollapse = () => {
+    setIsCollapsed(!isCollapsed);
+  };
 
   useEffect(() => {
     fetchFonts()
@@ -68,10 +73,28 @@ export default function Home() {
     }
   }, [fonts])
 
+  const fetchFontsFromApi = async () => {
+    try {
+      const response = await fetch('/api/fonts');
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error('Error fetching fonts:', error);
+      return [];
+    }
+  };
+
+  function toTitleCase(str: string) {
+    return str.replace(
+      /\w\S*/g,
+      (      text: string) => text.charAt(0).toUpperCase() + text.substring(1).toLowerCase()
+    );
+  }
+
   const fetchFonts = async () => {
     try {
-      const response = await fetch('https://www.googleapis.com/webfonts/v1/webfonts?key=AIzaSyA16FApfQ02fPWzAocEtPC30lSs41FuyAg')
-      const data = await response.json()
+      const response = await fetchFontsFromApi()
+      const data = await response
 
       const shuffledFonts = shuffleArray(data.items as Font[])
 
@@ -189,7 +212,7 @@ export default function Home() {
         setCurrentFontIndex(getNextFontIndex(currentFontIndex))
         setDirection(null)
         setShowIcon(null)
-      }, 300)
+      }, 100)
     } else {
       console.error('No fonts available or current font is undefined')
       fetchFonts()
@@ -205,7 +228,7 @@ export default function Home() {
         setCurrentFontIndex(getNextFontIndex(currentFontIndex))
         setDirection(null)
         setShowIcon(null)
-      }, 300)
+      }, 100)
     } else {
       console.error('No fonts available or current font is undefined')
       fetchFonts()
@@ -349,16 +372,16 @@ export default function Home() {
       </div>
 
       <div className="flex justify-center space-x-4 mt-8">
-        <Button onClick={() => handleSkip(2)} variant="outline" size="lg" className="rounded-full p-6">
+        <Button onClick={() => handleSkip(2)} variant="outline" size="lg" className="rounded-full p-6 hover:bg-red-100">
           <Frown className="h-8 w-8 text-red-700" />
         </Button>
-        <Button onClick={() => handleSkip(1)} variant="outline" size="lg" className="rounded-full p-6">
+        <Button onClick={() => handleSkip(1)} variant="outline" size="lg" className="rounded-full p-6 hover:bg-red-100">
           <X className="h-8 w-8 text-red-500" />
         </Button>
-        <Button onClick={() => handleKeep(1)} variant="outline" size="lg" className="rounded-full p-6">
+        <Button onClick={() => handleKeep(1)} variant="outline" size="lg" className="rounded-full p-6 hover:bg-green-100">
           <Heart className="h-8 w-8 text-green-500" />
         </Button>
-        <Button onClick={() => handleKeep(2)} variant="outline" size="lg" className="rounded-full p-6">
+        <Button onClick={() => handleKeep(2)} variant="outline" size="lg" className="rounded-full p-6 hover:bg-yellow-100">
           <Star className="h-8 w-8 text-yellow-500" />
         </Button>
       </div>
@@ -377,74 +400,102 @@ export default function Home() {
         </Tooltip>
       </TooltipProvider>
 
-      <Card className="absolute bottom-4 right-4 p-4 max-w-xs w-full max-h-[calc(100vh-2rem)] overflow-y-auto">
-        <h2 className="text-xl font-semibold mb-2">Kept Fonts:</h2>
-        <ScrollArea className="h-[200px]  rounded-md border p-4">
-          <ul className="list-disc list-inside mb-4">
-            {keptFonts.map((font, index) => (
-              <TooltipProvider key={index}>
-                <Tooltip>
-                <TooltipTrigger asChild>
-                    <li
-                      className="text-sm flex items-center cursor-pointer bg-gray-100 p-1 rounded mb-1"
-                      style={{ fontFamily: `'${font}', sans-serif` }}
-                    >
-                      {superLikedFonts.includes(font) && (
-                        <Sparkles className="text-yellow-500 mr-1" />
-                      )}
-                      {font}
-                    </li>
-                  </TooltipTrigger>
-                  <TooltipContent className="p-4">
-                    <p>
-                      Add this to your HTML:
-                    </p>
-                    <pre className="bg-gray-100 p-2 rounded">
-                      <code className="text-blue-500">
-                        &lt;link rel="stylesheet" href="https://fonts.googleapis.com/css?family={font}"&gt;
-                      </code>
-                    </pre>
-                    <p className="mt-2">
-                      Style an element with the requested web font, either in a stylesheet:
-                    </p>
-                    <pre className="bg-gray-100 p-2 rounded">
-                      <code className="text-blue-500">
-                        .css-selector {'{'}<br />
-                        &nbsp;&nbsp;font-family: '{font}', serif;<br />
-                        {'}'}
-                      </code>
-                    </pre>
-                    <p className="mt-2">or with an inline style on the element itself:</p>
-                    <pre className="bg-gray-100 p-2 rounded">
-                      <code className="text-blue-500">
-                        &lt;div style="font-family: '{font}', serif;"&gt;Your text&lt;/div&gt;
-                      </code>
-                    </pre>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
+      <Card className={`absolute bottom-4 right-4 p-2 max-w-xs w-full max-h-[calc(100vh-2rem)] overflow-y-auto transition-height duration-300 ${isCollapsed ? 'collapsed' : 'expanded'}`}>
+        <div className="flex items-center">
+          <button onClick={toggleCollapse} className="text-black">
+            {!isCollapsed ? <ChevronUp className="h-5 w-5" /> : <ChevronDown className="h-5 w-5" />}
+          </button>
+          {!isCollapsed ? <h2 className="text-xl font-semibold ml-2">Font Stats</h2> : <h2 className="text-xl font-semibold ml-2"></h2>}
+        </div>
+        {isCollapsed && (
+          <>
+            {keptFonts.length > 0 && (
+              <>
+                <h2 className="text-xl font-semibold mb-2">Kept Fonts:</h2>
+                <ScrollArea className="h-[200px]  rounded-md border p-4">
+                  <ul className="list-disc list-inside mb-4">
+                    {keptFonts.map((font, index) => (
+                      <TooltipProvider key={index}>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <li
+                              className="text-sm flex items-center cursor-pointer bg-gray-100 p-1 rounded mb-1"
+                              style={{ fontFamily: `'${font}', sans-serif` }}
+                            >
+                              {superLikedFonts.includes(font) && (
+                                <Sparkles className="text-yellow-500 mr-1" />
+                              )}
+                              {font}
+                            </li>
+                          </TooltipTrigger>
+                          <TooltipContent className="p-4">
+                            <p>
+                              Add this to your HTML:
+                            </p>
+                            <pre className="bg-gray-100 p-2 rounded">
+                              <code className="text-blue-500">
+                                &lt;link rel="stylesheet" href="https://fonts.googleapis.com/css?family={font}"&gt;
+                              </code>
+                            </pre>
+                            <p className="mt-2">
+                              Style an element with the requested web font, either in a stylesheet:
+                            </p>
+                            <pre className="bg-gray-100 p-2 rounded">
+                              <code className="text-blue-500">
+                                .css-selector {'{'}<br />
+                                &nbsp;&nbsp;font-family: '{font}', serif;<br />
+                                {'}'}
+                              </code>
+                            </pre>
+                            <p className="mt-2">or with an inline style on the element itself:</p>
+                            <pre className="bg-gray-100 p-2 rounded">
+                              <code className="text-blue-500">
+                                &lt;div style="font-family: '{font}', serif;"&gt;Your text&lt;/div&gt;
+                              </code>
+                            </pre>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    ))}
+                  </ul>
+                </ScrollArea>
+              </>
+            )}
+            <h3 className="text-lg font-semibold mb-2">Category Weights:</h3>
+            {Object.entries(categoryWeights).map(([category, weight]) => (
+              <div key={category} className="mb-2">
+                <div className="flex justify-between text-sm mb-1">
+                  <span style={{ fontWeight: 'bold' }}>{toTitleCase(category)}</span>
+                  {/* <span>{weight.toFixed(1)}</span> */}
+                </div>
+                <Progress value={Math.max(50, (weight / Math.max(...Object.values(categoryWeights))) * 100)} />
+              </div>
             ))}
-          </ul>
-        </ScrollArea>
-        <h3 className="text-lg font-semibold mb-2">Category Weights:</h3>
-        {Object.entries(categoryWeights).map(([category, weight]) => (
-          <div key={category} className="mb-2">
-            <div className="flex justify-between text-sm mb-1">
-              <span>{category}</span>
-              <span>{weight.toFixed(1)}</span>
-            </div>
-            <Progress value={Math.max(50, (weight / Math.max(...Object.values(categoryWeights))) * 100)} />
-          </div>
-        ))}
-        <Button variant="outline" onClick={clearWeights} className="mt-4 w-full">
-          Clear Weights
-        </Button>
-        {explorationMode && (
-          <Badge variant="outline" className="mt-2 w-full">
-            Exploration Mode: Discovering new fonts
-          </Badge>
-        )}
+            <Button variant="outline" onClick={clearWeights} className="mt-4 w-full">
+              Clear Weights
+            </Button>
+            {explorationMode && (
+              <Badge variant="outline" className="mt-2 w-full">
+                Exploration Mode: Discovering new fonts
+              </Badge>
+            )}
+            </>
+          )}
       </Card>
+
+      <div className="absolute bottom-0 left-0 p-4">
+        <p className="text-sm text-gray-500">
+          Created by Ryan Vogel -{' '}
+          <a
+            href="https://www.buymeacoffee.com/exonenterprise"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-blue-500 underline"
+          >
+            buy me a coffee?
+          </a>
+        </p>
+      </div>
     </div>
   )
 }
