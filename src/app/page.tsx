@@ -3,10 +3,10 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useSwipeable } from 'react-swipeable'
-import { X, Heart, Star, Frown, ChevronDown, ChevronUp, ChevronLeft, ChevronRight } from 'lucide-react'
+import { X, Heart, Star, Frown } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Card } from "@/components/ui/card"
+// import { Card } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
 import {
   Tooltip,
@@ -34,7 +34,7 @@ interface CategoryWeights {
 }
 
 export default function Home() {
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  // const [isCollapsed, setIsCollapsed] = useState(false);
   const [fonts, setFonts] = useState<Font[]>([])
   const [currentFontIndex, setCurrentFontIndex] = useState(0)
   const [keptFonts, setKeptFonts] = useState<string[]>([])
@@ -59,9 +59,9 @@ export default function Home() {
 
   const cardRef = useRef(null)
 
-  const toggleCollapse = () => {
-    setIsCollapsed(!isCollapsed);
-  };
+  // const toggleCollapse = () => {
+  //   setIsCollapsed(!isCollapsed);
+  // };
 
   useEffect(() => {
     fetchFonts()
@@ -437,7 +437,7 @@ export default function Home() {
       <Sheet>
         <SheetTrigger asChild>
           <Button className="fixed bottom-4 right-4 z-10">
-            Font Stats {isCollapsed ? <ChevronRight /> : <ChevronRight />}
+            Font Stats
           </Button>
         </SheetTrigger>
         <SheetContent className='bg-[#FFFFFF]'>
