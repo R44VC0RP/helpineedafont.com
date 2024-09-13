@@ -18,6 +18,8 @@ import { Badge } from "@/components/ui/badge"
 import { Label } from "@/components/ui/label"
 import { Sparkles } from 'lucide-react'
 import { ScrollArea } from "@/components/ui/scroll-area"
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
+
 interface Font {
   family: string;
   category: string;
@@ -296,26 +298,26 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 p-4 relative">
-      <header className="absolute top-0 left-0 right-0 bg-white shadow-md p-4 z-10">
-        <div className="max-w-6xl mx-auto flex justify-between items-center">
+    <div className="min-h-screen flex flex-col bg-gray-100 p-4 relative">
+      <header className="fixed top-0 left-0 right-0 bg-white shadow-md p-4 z-10">
+        <div className="max-w-6xl mx-auto flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
           <h1
             className="text-2xl font-bold text-black"
             style={{ fontFamily: headerFont ? `'${headerFont.family}', sans-serif` : 'sans-serif' }}
           >
             helpineedafont.com
           </h1>
-          <div className="flex items-center space-x-4">
+          <div className="flex flex-col sm:flex-row items-center space-y-2 sm:space-y-0 sm:space-x-4">
             <Badge variant="secondary" className="text-sm">
               {fonts.length} fonts loaded
             </Badge>
-            <div className="">
-              <Label htmlFor="customText" className="text-black">Set your font test text:</Label>
+            <div className="w-full sm:w-auto">
+              <Label htmlFor="customText" className="text-black sr-only">Set your font test text:</Label>
               <Input
                 type="text"
                 value={customText}
                 onChange={(e) => setCustomText(e.target.value)}
-                className="text-black w-full w-[400px]"
+                className="text-black w-full sm:w-[300px]"
                 placeholder="Enter custom text..."
               />
             </div>
@@ -323,85 +325,87 @@ export default function Home() {
         </div>
       </header>
 
-      <div className="relative" {...handlers}>
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={currentFontIndex}
-            ref={cardRef}
-            initial={{ opacity: 0, x: direction === 'left' ? 300 : direction === 'right' ? -300 : 0 }}
-            animate={{ opacity: 1, x: swipeOffset }}
-            exit={{ opacity: 0, x: direction === 'left' ? -300 : direction === 'right' ? 300 : 0 }}
-            transition={{ duration: 0.3 }}
-            className="text-center bg-white rounded-lg shadow-lg p-12 max-w-2xl w-full cursor-grab active:cursor-grabbing select-none text-black"
-          >
-            <h2 className="text-2xl font-semibold mb-4 pointer-events-none text-black">{fonts[currentFontIndex]?.family}</h2>
-            <p
-              className="text-5xl mb-8 pointer-events-none"
-              style={{
-                fontFamily: `'${fonts[currentFontIndex]?.family}', sans-serif`,
-              }}
-            >
-              {customText}
-            </p>
-            <p className="text-gray-500 pointer-events-none">{fonts[currentFontIndex]?.category}</p>
-          </motion.div>
-        </AnimatePresence>
-        <AnimatePresence>
-          {showIcon === 'keep' && (
+      <main className="flex-grow flex items-center justify-center mt-20 sm:mt-0">
+        <div className="relative w-full max-w-md" {...handlers}>
+          <AnimatePresence mode="wait">
             <motion.div
-              initial={{ opacity: 0, scale: 0.5 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.5 }}
-              className="absolute top-1/2 right-4 transform -translate-y-1/2"
+              key={currentFontIndex}
+              ref={cardRef}
+              initial={{ opacity: 0, x: direction === 'left' ? 300 : direction === 'right' ? -300 : 0 }}
+              animate={{ opacity: 1, x: swipeOffset }}
+              exit={{ opacity: 0, x: direction === 'left' ? -300 : direction === 'right' ? 300 : 0 }}
+              transition={{ duration: 0.3 }}
+              className="text-center bg-white rounded-lg shadow-lg p-6 sm:p-12 w-full cursor-grab active:cursor-grabbing select-none text-black"
             >
-              <Heart className="h-16 w-16 text-green-500" />
+              <h2 className="text-xl sm:text-2xl font-semibold mb-4 pointer-events-none text-black">{fonts[currentFontIndex]?.family}</h2>
+              <p
+                className="text-3xl sm:text-5xl mb-8 pointer-events-none"
+                style={{
+                  fontFamily: `'${fonts[currentFontIndex]?.family}', sans-serif`,
+                }}
+              >
+                {customText}
+              </p>
+              <p className="text-gray-500 pointer-events-none">{fonts[currentFontIndex]?.category}</p>
             </motion.div>
-          )}
-          {showIcon === 'skip' && (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.5 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.5 }}
-              className="absolute top-1/2 left-4 transform -translate-y-1/2"
-            >
-              <X className="h-16 w-16 text-red-500" />
-            </motion.div>
-          )}
-          {showIcon === 'superLike' && (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.5 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.5 }}
-              className="absolute top-1/2 right-4 transform -translate-y-1/2"
-            >
-              <Star className="h-16 w-16 text-yellow-500" />
-            </motion.div>
-          )}
-          {showIcon === 'superHate' && (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.5 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.5 }}
-              className="absolute top-1/2 left-4 transform -translate-y-1/2"
-            >
-              <Frown className="h-16 w-16 text-red-700" />
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
+          </AnimatePresence>
+          <AnimatePresence>
+            {showIcon === 'keep' && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.5 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.5 }}
+                className="absolute top-1/2 right-4 transform -translate-y-1/2"
+              >
+                <Heart className="h-16 w-16 text-green-500" />
+              </motion.div>
+            )}
+            {showIcon === 'skip' && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.5 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.5 }}
+                className="absolute top-1/2 left-4 transform -translate-y-1/2"
+              >
+                <X className="h-16 w-16 text-red-500" />
+              </motion.div>
+            )}
+            {showIcon === 'superLike' && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.5 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.5 }}
+                className="absolute top-1/2 right-4 transform -translate-y-1/2"
+              >
+                <Star className="h-16 w-16 text-yellow-500" />
+              </motion.div>
+            )}
+            {showIcon === 'superHate' && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.5 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.5 }}
+                className="absolute top-1/2 left-4 transform -translate-y-1/2"
+              >
+                <Frown className="h-16 w-16 text-red-700" />
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+      </main>
 
-      <div className="flex justify-center space-x-4 mt-8">
-        <Button onClick={() => handleSkip(2)} variant="outline" size="lg" className="rounded-full p-6 hover:bg-red-100">
-          <Frown className="h-8 w-8 text-red-700" />
+      <div className="flex justify-center space-x-2 sm:space-x-4 mt-8">
+        <Button onClick={() => handleSkip(2)} variant="outline" size="icon" className="rounded-full p-2 sm:p-6 hover:bg-red-100">
+          <Frown className="h-6 w-6 sm:h-8 sm:w-8 text-red-700" />
         </Button>
-        <Button onClick={() => handleSkip(1)} variant="outline" size="lg" className="rounded-full p-6 hover:bg-red-100">
-          <X className="h-8 w-8 text-red-500" />
+        <Button onClick={() => handleSkip(1)} variant="outline" size="icon" className="rounded-full p-2 sm:p-6 hover:bg-red-100">
+          <X className="h-6 w-6 sm:h-8 sm:w-8 text-red-500" />
         </Button>
-        <Button onClick={() => handleKeep(1)} variant="outline" size="lg" className="rounded-full p-6 hover:bg-green-100">
-          <Heart className="h-8 w-8 text-green-500" />
+        <Button onClick={() => handleKeep(1)} variant="outline" size="icon" className="rounded-full p-2 sm:p-6 hover:bg-green-100">
+          <Heart className="h-6 w-6 sm:h-8 sm:w-8 text-green-500" />
         </Button>
-        <Button onClick={() => handleKeep(2)} variant="outline" size="lg" className="rounded-full p-6 hover:bg-yellow-100">
-          <Star className="h-8 w-8 text-yellow-500" />
+        <Button onClick={() => handleKeep(2)} variant="outline" size="icon" className="rounded-full p-2 sm:p-6 hover:bg-yellow-100">
+          <Star className="h-6 w-6 sm:h-8 sm:w-8 text-yellow-500" />
         </Button>
       </div>
 
@@ -419,35 +423,37 @@ export default function Home() {
         </Tooltip>
       </TooltipProvider>
 
-      <Card className={`absolute bottom-4 right-4 p-2 max-w-xs w-full max-h-[calc(100vh-2rem)] overflow-y-auto transition-height duration-300 ${isCollapsed ? 'collapsed' : 'expanded'}`}>
-        <div className="flex items-center">
-          <button onClick={toggleCollapse} className="text-black">
-            {!isCollapsed ? <ChevronUp className="h-5 w-5" /> : <ChevronDown className="h-5 w-5" />}
-          </button>
-          {!isCollapsed ? <><h2 className="text-md font-semibold ml-2">Font Stats | {keptFonts.length} saved fonts.</h2></> : <h2 className="text-xl font-semibold ml-2"></h2>}
-        </div>
-        {isCollapsed && (
-          <>
+      <Sheet>
+        <SheetTrigger asChild>
+          <Button variant="outline" className="fixed bottom-4 right-4 z-10">
+            Font Stats
+          </Button>
+        </SheetTrigger>
+        <SheetContent>
+          <SheetHeader>
+            <SheetTitle>Font Stats | {keptFonts.length} saved fonts</SheetTitle>
+          </SheetHeader>
+          <div className="mt-4">
             {keptFonts.length > 0 && (
               <>
                 <h2 className="text-xl font-semibold mb-2">Kept Fonts:</h2>
-                <ScrollArea className="h-[200px]  rounded-md border p-4">
-                  <ul className="list-disc list-inside mb-4">
+                <ScrollArea className="h-[200px] rounded-md border p-4">
+                  <ul className="space-y-2">
                     {keptFonts.map((font, index) => (
                       <TooltipProvider key={index}>
                         <Tooltip>
                           <TooltipTrigger asChild>
                             <li
-                              className="text-sm flex items-center cursor-pointer bg-gray-100 p-1 rounded mb-1"
+                              className="text-sm flex items-center cursor-pointer bg-gray-100 p-2 rounded"
                               style={{ fontFamily: `'${font}', sans-serif` }}
                             >
                               {superLikedFonts.includes(font) && (
-                                <Sparkles className="text-yellow-500 mr-1" />
+                                <Sparkles className="text-yellow-500 mr-2" />
                               )}
                               {font}
                             </li>
                           </TooltipTrigger>
-                          <TooltipContent className="p-4">
+                          <TooltipContent side="left" className="p-4 max-w-xs">
                             <p>
                               Add this to your HTML:
                             </p>
@@ -480,29 +486,28 @@ export default function Home() {
                 </ScrollArea>
               </>
             )}
-            <h3 className="text-lg font-semibold mb-2">Category Weights:</h3>
+            <h3 className="text-lg font-semibold my-4">Category Weights:</h3>
             {Object.entries(categoryWeights).map(([category, weight]) => (
-              <div key={category} className="mb-2">
+              <div key={category} className="mb-4">
                 <div className="flex justify-between text-sm mb-1">
-                  <span style={{ fontWeight: 'bold' }}>{toTitleCase(category)}</span>
-                  {/* <span>{weight.toFixed(1)}</span> */}
+                  <span className="font-medium">{toTitleCase(category)}</span>
                 </div>
                 <Progress value={Math.max(50, (weight / Math.max(...Object.values(categoryWeights))) * 100)} />
               </div>
             ))}
-            <Button variant="outline" onClick={clearWeights} className="mt-4 w-full">
+            <Button variant="outline" onClick={clearWeights} className="w-full mt-4">
               Clear Weights
             </Button>
             {explorationMode && (
-              <Badge variant="outline" className="mt-2 w-full">
+              <Badge variant="outline" className="mt-4 w-full">
                 Exploration Mode: Discovering new fonts
               </Badge>
             )}
-            </>
-          )}
-      </Card>
+          </div>
+        </SheetContent>
+      </Sheet>
 
-      <div className="absolute bottom-0 left-0 p-4">
+      <div className="fixed bottom-0 left-0 p-4">
         <p className="text-sm text-gray-500">
           Created by Ryan Vogel -{' '}
           <a
