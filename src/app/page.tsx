@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useSwipeable } from 'react-swipeable'
-import { X, Heart, Star, Frown, ChevronDown, ChevronUp } from 'lucide-react'
+import { X, Heart, Star, Frown, ChevronDown, ChevronUp, ChevronLeft, ChevronRight } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card } from "@/components/ui/card"
@@ -48,6 +48,14 @@ export default function Home() {
   const [fontShowCount, setFontShowCount] = useState<{ [key: string]: number }>({})
   const [explorationMode, setExplorationMode] = useState(false)
   const [superLikedFonts, setSuperLikedFonts] = useState<string[]>([])
+
+  const [isMobile, setIsMobile] = useState(false)
+
+  if (typeof window !== 'undefined') {
+    window.addEventListener('resize', () => {
+      setIsMobile(window.innerWidth < 640)
+    })
+  }
 
   const cardRef = useRef(null)
 
@@ -394,25 +402,28 @@ export default function Home() {
         </div>
       </main>
 
-      <div className="flex justify-center space-x-2 sm:space-x-4 mt-8">
-        <Button onClick={() => handleSkip(2)} variant="outline" size="icon" className="rounded-full p-2 sm:p-6 hover:bg-red-100">
-          <Frown className="h-6 w-6 sm:h-8 sm:w-8 text-red-700" />
+      <div className="flex justify-center space-x-2 sm:space-x-6 pb-10 mb-10">
+        <Button onClick={() => handleSkip(2)} variant="outline" className="rounded-full p-2 sm:p-6 hover:bg-red-100">
+          <Frown className="text-red-700" />
         </Button>
-        <Button onClick={() => handleSkip(1)} variant="outline" size="icon" className="rounded-full p-2 sm:p-6 hover:bg-red-100">
-          <X className="h-6 w-6 sm:h-8 sm:w-8 text-red-500" />
+        <Button onClick={() => handleSkip(1)} variant="outline"  className="rounded-full p-2 sm:p-6 hover:bg-red-100">
+          <X className="h-8 w-8 text-red-500" />
         </Button>
-        <Button onClick={() => handleKeep(1)} variant="outline" size="icon" className="rounded-full p-2 sm:p-6 hover:bg-green-100">
-          <Heart className="h-6 w-6 sm:h-8 sm:w-8 text-green-500" />
+        <Button onClick={() => handleKeep(1)} variant="outline"  className="rounded-full p-2 sm:p-6 hover:bg-green-100">
+          <Heart className="h-8 w-8  text-green-500" />
         </Button>
-        <Button onClick={() => handleKeep(2)} variant="outline" size="icon" className="rounded-full p-2 sm:p-6 hover:bg-yellow-100">
-          <Star className="h-6 w-6 sm:h-8 sm:w-8 text-yellow-500" />
+        <Button onClick={() => handleKeep(2)} variant="outline"  className="rounded-full p-2 sm:p-6 hover:bg-yellow-100">
+          <Star className="h-8 w-8  text-yellow-500" />
         </Button>
       </div>
 
       <TooltipProvider>
         <Tooltip>
           <TooltipTrigger asChild className="mt-4 text-black">
-            <Button variant="outline" className="mt-4">Keyboard Legend</Button>
+            {isMobile && (
+              <Button variant="outline" className="mt-4">Keyboard Legend</Button>
+            )}
+            
           </TooltipTrigger>
           <TooltipContent className="p-4">
             <p className="mb-2"><strong>←</strong> Skip</p>
@@ -425,11 +436,11 @@ export default function Home() {
 
       <Sheet>
         <SheetTrigger asChild>
-          <Button variant="outline" className="fixed bottom-4 right-4 z-10">
-            Font Stats
+          <Button className="fixed bottom-4 right-4 z-10">
+            Font Stats {isCollapsed ? <ChevronRight /> : <ChevronRight />}
           </Button>
         </SheetTrigger>
-        <SheetContent>
+        <SheetContent className='bg-[#FFFFFF]'>
           <SheetHeader>
             <SheetTitle>Font Stats | {keptFonts.length} saved fonts</SheetTitle>
           </SheetHeader>
@@ -486,7 +497,7 @@ export default function Home() {
                 </ScrollArea>
               </>
             )}
-            <h3 className="text-lg font-semibold my-4">Category Weights:</h3>
+            <h3 className="text-lg font-semibold my-4">Category Preferences:</h3>
             {Object.entries(categoryWeights).map(([category, weight]) => (
               <div key={category} className="mb-4">
                 <div className="flex justify-between text-sm mb-1">

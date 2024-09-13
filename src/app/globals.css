@@ -19,9 +19,8 @@
 }
 
 body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Nanum Gothic, sans-serif;
+  color: #0a0a0a;
+
   font-weight: 400;
 }
 
@@ -33,7 +32,7 @@ body {
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
+    --background: 240 10% 3.9%;
     --foreground: 240 10% 3.9%;
     --card: 0 0% 100%;
     --card-foreground: 240 10% 3.9%;
