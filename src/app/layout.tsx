@@ -16,6 +16,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <script defer src="https://analytics.raavai.com/script.js" data-website-id="7acbcbcc-e84c-4995-8585-3e3d81937603"></script>
+      </head>
       <body
         className={`antialiased`}
       >
